@@ -28,8 +28,6 @@ function SearchUser({ onClose }) {
         search: search,
       });
 
-      console.log(res.data);
-
       if (res.data?.status) {
         setSearchUser(res.data?.data);
         setLoading(false);

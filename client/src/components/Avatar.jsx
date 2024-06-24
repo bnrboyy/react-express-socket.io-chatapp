@@ -1,7 +1,15 @@
 import React, { useEffect } from "react";
 import { FaRegUserCircle } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
-export default function Avatar({ userId, name, imageUrl, width, height }) {
+export default function Avatar({
+  userId = null,
+  name,
+  imageUrl,
+  width,
+  height,
+}) {
+  const onlineUsers = useSelector((state) => state?.user?.onlineUsers);
   let avatarName = "";
 
   if (name) {
@@ -26,11 +34,12 @@ export default function Avatar({ userId, name, imageUrl, width, height }) {
   ];
 
   const randomColor = bgColor[Math.floor(Math.random() * bgColor.length)];
+  const isOnline = onlineUsers?.includes(userId);
 
   return (
     <div
       style={{ width: width + "px", height: height + "px" }}
-      className={`text-slate-800 overflow-hidden rounded-full font-bold`}
+      className={`text-slate-800 rounded-full font-bold relative`}
     >
       {imageUrl ? (
         <img
@@ -50,6 +59,8 @@ export default function Avatar({ userId, name, imageUrl, width, height }) {
       ) : (
         <FaRegUserCircle size={width} />
       )}
+
+      {isOnline && <div className="bg-green-500 p-1 border-2 border-slate-50 absolute bottom-2 -right-1 z-10 rounded-full"></div>}
     </div>
   );
 }

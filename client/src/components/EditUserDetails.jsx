@@ -91,6 +91,7 @@ export default function EditUserDetails({ onClose, data }) {
                 height={40}
                 imageUrl={userData?.profile_pic}
                 name={userData.name}
+                userId={userData?._id}
               />
               <label htmlFor="profile_pic">
                 <button

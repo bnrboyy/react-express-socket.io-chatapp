@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import { app, server } from "./socket/index.js";
 
 dotenv.config().parsed;
-
 // const app = express();
 app.use(
   cors({
