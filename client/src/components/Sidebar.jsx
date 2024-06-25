@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoChatbubbleEllipses } from "react-icons/io5";
 import { FaUserPlus } from "react-icons/fa";
 import { TbLogout2 } from "react-icons/tb";
@@ -17,8 +17,40 @@ export default function Sidebar() {
   const [allUser, setAllUser] = useState([]);
   const [openSearch, setOpenSearch] = useState(false);
   const user = useSelector((state) => state?.user);
+  const socketConn = useSelector((state) => state.user.socketConn);
+
   const dispath = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (socketConn) {
+      socketConn.emit("sidebar", user?._id);
+      socketConn.on("conversations", (data) => {
+        console.log("conversations", data);
+
+        const conversationUserData = data.map((convUser, index) => {
+          if (convUser?.sender?._id === convUser?.receiver?._id) {
+            return {
+              ...convUser,
+              userDetails: convUser?.sender,
+            };
+          } else if (convUser?.receiver?._id === user?._id) {
+            return {
+              ...convUser,
+              userDetails: convUser?.receiver,
+            };
+          } else {
+            return {
+              ...convUser,
+              userDetails: convUser?.sender,
+            };
+          }
+        });
+
+        setAllUser(conversationUserData);
+      });
+    }
+  }, [socketConn, user]);
 
   const handleLogout = () => {
     try {
@@ -101,6 +133,25 @@ export default function Sidebar() {
               </p>
             </div>
           )}
+
+          {allUser.map((user, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <div>
+                <Avatar
+                  imageUrl={user?.userDetails?.profile_pic}
+                  name={user?.userDetails?.name}
+                  width={50}
+                  height={50}
+                />
+              </div>
+              <div>
+                <h3 className="text-ellipsis line-clamp-1">{user?.userDetails?.name}</h3>
+                <div>
+                  <p>{user?.lastMsg?.text}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -110,9 +161,7 @@ export default function Sidebar() {
       )}
 
       {/** search bar */}
-      { openSearch && (
-        <SearchUser onClose={() => setOpenSearch(false)} />
-      ) }
+      {openSearch && <SearchUser onClose={() => setOpenSearch(false)} />}
     </div>
   );
 }
