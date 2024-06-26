@@ -26,8 +26,6 @@ export default function Sidebar() {
     if (socketConn) {
       socketConn.emit("sidebar", user?._id);
       socketConn.on("conversations", (data) => {
-        console.log("conversations", data);
-
         const conversationUserData = data.map((convUser, index) => {
           if (convUser?.sender?._id === convUser?.receiver?._id) {
             return {
@@ -37,12 +35,12 @@ export default function Sidebar() {
           } else if (convUser?.receiver?._id === user?._id) {
             return {
               ...convUser,
-              userDetails: convUser?.receiver,
+              userDetails: convUser?.sender,
             };
           } else {
             return {
               ...convUser,
-              userDetails: convUser?.sender,
+              userDetails: convUser?.receiver,
             };
           }
         });
@@ -133,21 +131,24 @@ export default function Sidebar() {
               </p>
             </div>
           )}
-
           {allUser.map((user, index) => (
-            <div key={index} className="flex items-center gap-2">
+            <div key={index} className="flex items-center gap-2 p-1 hover:bg-slate-50 cursor-pointer">
               <div>
                 <Avatar
                   imageUrl={user?.userDetails?.profile_pic}
                   name={user?.userDetails?.name}
-                  width={50}
-                  height={50}
+                  width={45}
+                  height={45}
                 />
               </div>
               <div>
-                <h3 className="text-ellipsis line-clamp-1">{user?.userDetails?.name}</h3>
+                <h3 className="text-ellipsis line-clamp-1">
+                  {user?.userDetails?.name}
+                </h3>
                 <div>
-                  <p>{user?.lastMsg?.text}</p>
+                  <p className="text-sm text-ellipsis line-clamp-1 text-slate-500">
+                    {user?.lastMsg?.text}
+                  </p>
                 </div>
               </div>
             </div>

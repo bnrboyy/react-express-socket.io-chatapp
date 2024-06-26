@@ -146,7 +146,7 @@ io.on("connection", async (socket) => {
     );
   });
 
-  // sidebar
+  // sidebar //
   socket.on("sidebar", async (currentUserId) => {
     console.log("currentUserId", currentUserId);
 
@@ -166,8 +166,6 @@ io.on("connection", async (socket) => {
         .populate("sender")
         .populate("receiver");
 
-      // console.log("currentUserCon", currentUserCon)
-
       const conversations = currentUserCon.map((con) => {
         const countUnseenMsg = con.messages?.filter(
           (msg) => msg.seen === false
@@ -178,7 +176,7 @@ io.on("connection", async (socket) => {
           sender: con.sender,
           receiver: con.receiver,
           unseenMsg: countUnseenMsg,
-          lastMsg: con.messages?.length ? con.messages[0] : null,
+          lastMsg: con.messages?.length ? con.messages[con.messages.length - 1] : null,
           updatedAt: con.updatedAt,
         };
       });

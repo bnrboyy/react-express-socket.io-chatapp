@@ -69,7 +69,7 @@ export default function Home() {
           <Outlet />
         </section>
 
-        <div className={`${!basePath ? "hidden" : "lg:flex"}flex-col justify-center items-center gap-2 hidden`}>
+        <div className={`flex-col justify-center items-center gap-2 hidden ${!basePath ? "hidden" : "lg:flex"} `}>
           <div>
             <img src={logo} width={250} alt="logo" />
           </div>
