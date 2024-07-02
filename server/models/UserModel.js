@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema(
       default:
         "https://res.cloudinary.com/dpcrhvlzq/image/upload/v1625520840/default_profile_img_2_u0y17l.png",
     },
+    profile_bg: {
+      type: String,
+      default: "bg-orange-200",
+    },
   },
   {
     timestamps: true,

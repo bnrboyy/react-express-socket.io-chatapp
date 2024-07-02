@@ -3,7 +3,7 @@ import User from "../models/UserModel.js";
 
 async function register(req, res) {
   try {
-    const { name, email, password, profile_pic } = req.body;
+    const { name, email, password, profile_pic, profile_bg } = req.body;
     const checkEmail = await User.findOne({ email });
 
     if (checkEmail) {
@@ -18,6 +18,7 @@ async function register(req, res) {
       name,
       email,
       profile_pic,
+      profile_bg,
       password: hashedPassword,
     };
     const user = await User.create(payload);

@@ -4,9 +4,7 @@ import User from "../models/UserModel.js";
 async function updateUserDetails(req, res) {
   try {
     const token = req.cookies.token || "";
-
     const user = await getUserDetailsFromToken(token);
-    console.log(user)
 
     const { name, profile_pic } = req.body;
 

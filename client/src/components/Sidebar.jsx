@@ -11,6 +11,8 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { FiArrowUpLeft } from "react-icons/fi";
 import SearchUser from "./SearchUser";
+import { FaImage } from "react-icons/fa6";
+import { FaVideo } from "react-icons/fa6";
 
 export default function Sidebar() {
   const [editUserOpen, setEditUserOpen] = useState(false);
@@ -58,7 +60,8 @@ export default function Sidebar() {
         })
         .then(() => {
           dispath(logout());
-          localStorage.setItem("token", "");
+          localStorage.removeItem('token')
+          // localStorage.setItem("token", "");
           navigate("/email");
         });
     } catch (error) {
@@ -68,7 +71,7 @@ export default function Sidebar() {
 
   return (
     <div className="w-full h-full grid grid-cols-[48px,1fr] bg-white">
-      <div className="bg-slate-100 w-12 h-full rounded-tr-lg rounded-br-lg py-5 text-slate-600 flex flex-col justify-between">
+      <div className="bg-slate-100 w-12 h-full rounded-tr-lg rounded-br-lg text-slate-600 flex flex-col justify-between">
         <div>
           <NavLink
             className={({ isActive }) =>
@@ -132,26 +135,51 @@ export default function Sidebar() {
             </div>
           )}
           {allUser.map((user, index) => (
-            <div key={index} className="flex items-center gap-2 p-1 hover:bg-slate-50 cursor-pointer">
+            <NavLink
+              to={"/" + user?.userDetails?._id}
+              key={user?._id}
+              className="flex items-center gap-2 py-3 pl-1 hover:bg-slate-50 cursor-pointer border border-transparent hover:border-primary rounded"
+            >
               <div>
                 <Avatar
                   imageUrl={user?.userDetails?.profile_pic}
                   name={user?.userDetails?.name}
-                  width={45}
-                  height={45}
+                  width={43}
+                  height={43}
+                  userData={user?.userDetails}
                 />
               </div>
               <div>
-                <h3 className="text-ellipsis line-clamp-1">
+                <h3 className="text-ellipsis line-clamp-1 font-semibold text-base">
                   {user?.userDetails?.name}
                 </h3>
-                <div>
-                  <p className="text-sm text-ellipsis line-clamp-1 text-slate-500">
-                    {user?.lastMsg?.text}
-                  </p>
+                <div className="text-slate-500 text-sm flex items-center gap-1">
+                  <div className="flex items-center gap-1">
+                    {user.lastMsg.imageUrl && (
+                      <div className="flex items-center gap-1">
+                        <span>
+                          <FaImage />
+                        </span>
+                        {!user?.lastMsg?.text && <span>Image</span>}
+                      </div>
+                    )}
+                    {user.lastMsg.videoUrl && (
+                      <div className="flex items-center gap-1">
+                        <span>
+                          <FaVideo />
+                        </span>
+                        {!user?.lastMsg?.text && <span>Video</span>}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-ellipsis line-clamp-1">{user?.lastMsg?.text}</p>
                 </div>
               </div>
-            </div>
+              { Boolean(user?.unseenMsg) && (
+                <p className="text-xs w-6 h-6 flex justify-center ml-auto p-1 bg-primary text-white font-semibold rounded-full">{user?.unseenMsg}</p>
+              )}
+
+            </NavLink>
           ))}
         </div>
       </div>

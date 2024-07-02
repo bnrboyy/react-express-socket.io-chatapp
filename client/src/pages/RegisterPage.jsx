@@ -8,6 +8,17 @@ import toast from "react-hot-toast";
 import { uploadFile } from "../helpers/uploadFile";
 
 export default function RegisterPage() {
+  const bgColor = [
+    "bg-slate-200",
+    "bg-teal-200",
+    "bg-red-200",
+    "bg-green-200",
+    "bg-yellow-200",
+    "bg-blue-200",
+    "bg-cyan-200",
+    "bg-orange-200",
+  ];
+  const randomColor = bgColor[Math.floor(Math.random() * bgColor.length)];
   const navigate = useNavigate();
   const [uploadPhoto, setUploadPhoto] = useState("");
   const [data, setData] = useState({
@@ -15,6 +26,7 @@ export default function RegisterPage() {
     email: "",
     password: "",
     profile_pic: "",
+    profile_bg: randomColor,
   });
 
   const handleOnChange = (e) => {
@@ -70,9 +82,10 @@ export default function RegisterPage() {
           email: "",
           password: "",
           profile_pic: "",
+          profile_bg: randomColor,
         });
 
-        navigate('/email')
+        navigate("/email");
       }
     } catch (error) {
       toast.error(error?.response?.data?.message);

@@ -80,6 +80,7 @@ export default function CheckPasswordPage() {
             height={70}
             name={location?.state?.name}
             imageUrl={location?.state?.profile_pic}
+            userData={null}
           />
           <p className="font-semibold text-lg mt-1">{location?.state?.name}</p>
         </div>

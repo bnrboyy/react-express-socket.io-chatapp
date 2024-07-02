@@ -32,6 +32,7 @@ export default function MessagePage() {
     name: "",
     email: "",
     profile_pic: "",
+    profile_bg: "",
     online: false,
   });
 
@@ -39,7 +40,11 @@ export default function MessagePage() {
 
   useEffect(() => {
     if (currentMsg.current) {
-      currentMsg.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      currentMsg.current.scrollIntoView({
+        behavior: "auto",
+        block: "end",
+        inline: "end"
+      });
     }
   }, [allMessage]);
 
@@ -55,6 +60,8 @@ export default function MessagePage() {
           setAllMessage(data);
         }
       });
+
+      socketConn.emit("seen", params.userId);
     }
   }, [socketConn, params?.userId, user]);
 
@@ -139,6 +146,8 @@ export default function MessagePage() {
   const handleSendMessage = (e) => {
     e.preventDefault();
 
+    if (!message.text.toString().trim()) return false;
+
     if (message.text || message.imageUrl || message.videoUrl) {
       if (socketConn) {
         socketConn.emit("new-message", {
@@ -175,6 +184,7 @@ export default function MessagePage() {
                 imageUrl={userData.profile_pic}
                 name={userData.name}
                 userId={userData._id}
+                userData={userData}
               />
             </div>
           )}
@@ -203,85 +213,101 @@ export default function MessagePage() {
       <div className="w-full h-full relative">
         <section className="scrollbar flex h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll bg-slate-200 bg-opacity-50">
           {/* Show all message */}
-          <div className="flex flex-col w-full mt-auto gap-2 py-2 mx-2" ref={currentMsg}>
+          <div
+            className="flex flex-col w-full mt-auto gap-2 py-2 mx-2"
+            ref={currentMsg}
+          >
             {allMessage?.map(
               (msg, index) =>
                 (msg.text || msg.imageUrl || msg.videoUrl) && (
                   <div
                     key={index}
-                    className={`bg-white p-1 py-1 rounded-md w-fit max-w-sm ${
-                      user._id === msg.msgByUserId ? "ml-auto bg-teal-100" : ""
+                    className={`p-1 py-1 rounded-t-lg w-fit max-w-sm ${
+                      user._id === msg.msgByUserId
+                        ? "ml-auto bg-teal-100 rounded-bl-lg"
+                        : "bg-white rounded-br-lg "
                     }`}
                   >
                     <div className="w-full">
                       {msg?.imageUrl && (
-                        <img className="w-full h-full object-scale-down rounded-md" src={msg.imageUrl} />
+                        <img
+                          className="w-full h-full object-scale-down rounded-lg"
+                          src={msg.imageUrl}
+                        />
                       )}
                     </div>
                     <div className="w-full">
                       {msg?.videoUrl && (
                         <video
-                          className="w-full h-full object-scale-down rounded-md"
+                          className="w-full h-full object-scale-down rounded-lg"
                           src={msg.videoUrl}
                           controls
-                         />
+                        />
                       )}
                     </div>
-                    <p className={`px-2 break-words ${(msg.imageUrl || msg.videoUrl) && 'mt-2'}`}>{msg.text}</p>
-                    <p className={`text-xs text-slate-500 ml-auto w-fit ${!msg.text && "mt-1"}`}>
+                    <p
+                      className={`px-2 break-words ${
+                        (msg.imageUrl || msg.videoUrl) && "mt-2"
+                      }`}
+                    >
+                      {msg.text}
+                    </p>
+                    <p
+                      className={`text-xs text-slate-500 ml-auto w-fit ${
+                        !msg.text && "mt-1"
+                      }`}
+                    >
                       {moment(msg.createdAt).format("hh:mm")}
                     </p>
                   </div>
                 )
             )}
           </div>
-
-          
         </section>
         {/* upload image display */}
         {message.imageUrl && (
-            <div className="w-full h-full absolute bottom-0 bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden">
-              <button
-                onClick={handleRemoveImage}
-                className="w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-red-600"
-              >
-                <IoClose size={30} />
-              </button>
-              <div className="bg-white p-3 rounded">
-                <img
-                  className="rounded aspect-square w-full h-full max-w-sm m-2 object-scale-down"
-                  src={message.imageUrl}
-                  alt="Upload Image"
-                />
-              </div>
+          <div className="w-full h-full absolute bottom-0 bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden">
+            <button
+              onClick={handleRemoveImage}
+              className="w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-red-600"
+            >
+              <IoClose size={30} />
+            </button>
+            <div className="bg-white p-3 rounded">
+              <img
+                className="rounded aspect-square w-full h-full max-w-sm m-2 object-scale-down"
+                src={message.imageUrl}
+                alt="Upload Image"
+              />
             </div>
-          )}
-          {/* upload video display */}
-          {message.videoUrl && (
-            <div className="w-full h-full absolute bottom-0 bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden">
-              <button
-                onClick={handleRemoveVideo}
-                className="w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-red-600"
-              >
-                <IoClose size={30} />
-              </button>
-              <div className="bg-white p-3 rounded">
-                <video
-                  className="rounded aspect-square w-full h-full max-w-sm m-2 object-scale-down"
-                  src={message.videoUrl}
-                  controls
-                  autoPlay
-                  muted
-                />
-              </div>
+          </div>
+        )}
+        {/* upload video display */}
+        {message.videoUrl && (
+          <div className="w-full h-full absolute bottom-0 bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden">
+            <button
+              onClick={handleRemoveVideo}
+              className="w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-red-600"
+            >
+              <IoClose size={30} />
+            </button>
+            <div className="bg-white p-3 rounded">
+              <video
+                className="rounded aspect-square w-full h-full max-w-sm m-2 object-scale-down"
+                src={message.videoUrl}
+                controls
+                autoPlay
+                muted
+              />
             </div>
-          )}
+          </div>
+        )}
 
-          {loading && (
-            <div className="w-full h-full absolute bottom-0 flex justify-center items-center bg-black bg-opacity-20">
-              <Loading />
-            </div>
-          )}
+        {loading && (
+          <div className="w-full h-full absolute bottom-0 flex justify-center items-center bg-black bg-opacity-20">
+            <Loading />
+          </div>
+        )}
       </div>
 
       {/* send message component */}
@@ -324,12 +350,14 @@ export default function MessagePage() {
                 <input
                   className="hidden"
                   type="file"
+                  accept="image/*"
                   id="uploadImage"
                   onChange={handleUploadImage}
                 />
                 <input
                   className="hidden"
                   type="file"
+                  accept="video/*"
                   id="uploadVideo"
                   onChange={handleUploadVideo}
                 />
@@ -353,7 +381,15 @@ export default function MessagePage() {
               onChange={handleTextChange}
             />
 
-            <button disabled={loading?true:false} type="submit" className={`${loading ? "pointer-event-none text-gray-200 " : "text-primary hover:text-secondary"}`}>
+            <button
+              disabled={loading ? true : false}
+              type="submit"
+              className={`${
+                loading
+                  ? "pointer-event-none text-gray-200 "
+                  : "text-primary hover:text-secondary"
+              }`}
+            >
               <IoMdSend size={30} />
             </button>
           </form>

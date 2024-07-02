@@ -16,7 +16,7 @@ function SearchUser({ onClose }) {
     setLoading(true);
     setTimeout(() => {
       handlerSearchUser();
-    }, 500);
+    }, 300);
     if (search.trim() !== "") {
     }
   }, [search]);
@@ -40,8 +40,11 @@ function SearchUser({ onClose }) {
   };
 
   return (
-    <div className="fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-40 p-2">
-      <div className="w-full max-w-lg mx-auto mt-10">
+    <div
+      onClick={onClose}
+      className="fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-40 p-2 z-50"
+    >
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-lg mx-auto mt-10">
         {/** input search user  */}
         <div className="flex bg-white rounded h-14 overflow-hidden">
           <input
@@ -57,7 +60,7 @@ function SearchUser({ onClose }) {
         </div>
 
         {/** list user */}
-        <div className="bg-white mt-2 w-full p-4 rounded">
+        <div className="scrollbar bg-white mt-2 w-full p-4 rounded max-h-[600px] overflow-auto">
           {/** no user found */}
           {searchUser.length === 0 && !loading && (
             <div className="flex justify-center items-center h-full">
@@ -79,14 +82,12 @@ function SearchUser({ onClose }) {
         </div>
       </div>
 
-      <div>
-        <button
-          className="absolute top-0 right-0 mr-2 mt-2 text-2xl lg:text-4xl hover:text-white"
-          onClick={onClose}
-        >
-          <IoClose size={30} />
-        </button>
-      </div>
+      <button
+        className="absolute top-0 right-0 mr-2 mt-2 text-2xl lg:text-4xl hover:text-white"
+        onClick={onClose}
+      >
+        <IoClose size={30} />
+      </button>
     </div>
   );
 }

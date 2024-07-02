@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useState } from "react";
 import { FaRegUserCircle } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
@@ -8,6 +9,7 @@ export default function Avatar({
   imageUrl,
   width,
   height,
+  userData,
 }) {
   const onlineUsers = useSelector((state) => state?.user?.onlineUsers);
   let avatarName = "";
@@ -22,18 +24,6 @@ export default function Avatar({
     }
   }
 
-  const bgColor = [
-    "bg-slate-200",
-    "bg-teal-200",
-    "bg-red-200",
-    "bg-green-200",
-    "bg-yellow-200",
-    "bg-blue-200",
-    "bg-cyan-200",
-    "bg-sky-200",
-  ];
-
-  const randomColor = bgColor[Math.floor(Math.random() * bgColor.length)];
   const isOnline = onlineUsers?.includes(userId);
 
   return (
@@ -52,7 +42,9 @@ export default function Avatar({
       ) : name ? (
         <div
           style={{ width: width + "px", height: height + "px" }}
-          className={`overflow-hidden rounded-full shadow text-xl flex justify-center items-center ${randomColor}`}
+          className={`overflow-hidden rounded-full shadow text-xl flex justify-center items-center ${
+            userData && userData.profile_bg
+          }`}
         >
           {avatarName}
         </div>
@@ -60,7 +52,9 @@ export default function Avatar({
         <FaRegUserCircle size={width} />
       )}
 
-      {isOnline && <div className="bg-green-500 p-1 border-2 border-slate-50 absolute bottom-2 -right-1 z-10 rounded-full"></div>}
+      {isOnline && (
+        <div className="bg-green-500 p-1 border-2 border-slate-50 absolute bottom-2 -right-1 z-10 rounded-full"></div>
+      )}
     </div>
   );
 }
